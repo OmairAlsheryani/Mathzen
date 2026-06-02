@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathZen - The Adaptive Math Quest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: #ffffff;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --error: #ef4444;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            background: var(--card-bg);
+            max-width: 550px;
+            width: 100%;
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- Screens --- */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Start Screen UI --- */
+        .start-screen {
+            text-align: center;
+        }
+
+        .brand-logo {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .brand-tagline {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .setup-form input {
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+
+        .setup-form input:focus {
+            border-color: var(--primary);
+        }
+
+        /* --- Dashboard Stats Panel --- */
+        .stats-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        #level-val { color: #8b5cf6; }
+        #streak-val { color: #f59e0b; }
+        #timer-val { color: #ef4444; }
+
+        /* --- Feature: Level Progress Bar --- */
+        .level-progress-container {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .level-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #8b5cf6, #6366f1);
+            transition: width 0.4s ease;
+        }
+
+        /* --- Quiz Core Area --- */
+        .quiz-box {
+            text-align: center;
+        }
+
+        .welcome-msg {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: #f5f3ff;
+            color: #6d28d9;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .equation-display {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            letter-spacing: -1px;
+        }
+
+        /* --- Form Inputs & Buttons --- */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 14px 18px;
+            font-size: 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        /* --- Feedback Panels --- */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 14px;
+            display: none;
+            text-align: left;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #ecfdf5;
+            border: 1px solid var(--success);
+            color: #065f46;
+        }
+
+        .feedback.wrong {
+            display: block;
+            background: #fef2f2;
+            border: 1px solid var(--error);
+            color: #991b1b;
+        }
+
+        .feedback h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .next-btn {
+            margin-top: 15px;
+            width: 100%;
+            background: #0f172a;
+        }
+        .next-btn:hover { background: #1e293b; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="screen active" id="start-screen">
+            <div class="start-screen">
+                <div class="brand-logo">MathZen</div>
+                <div class="brand-tagline">The Adaptive Math Quest</div>
+                
+                <div class="setup-form">
+                    <input type="text" id="student-name" placeholder="Enter student name" maxlength="15" autocomplete="off">
+                    <button id="start-btn">Enter Arena</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="quiz-screen">
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <div class="stat-label">Difficulty</div>
+                    <div class="stat-value" id="level-val">Level 1</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Current Streak</div>
+                    <div class="stat-value" id="streak-val">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Time Remaining</div>
+                    <div class="stat-value" id="timer-val">20s</div>
+                </div>
+            </div>
+
+            <div class="level-progress-container">
+                <div class="level-progress-bar" id="level-progress"></div>
+            </div>
+
+            <div class="quiz-box">
+                <div class="welcome-msg" id="player-welcome">Let's go!</div>
+                <div class="level-badge" id="level-desc">Addition & Subtraction</div>
+                <div class="equation-display" id="equation-text">0 + 0 = ?</div>
+                
+                <div class="input-group" id="interaction-form">
+                    <input type="number" id="student-answer" placeholder="?" autocomplete="off">
+                    <button id="submit-btn">Check</button>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-panel">
+                <h4 id="feedback-title"></h4>
+                <div class="explanation" id="explanation-text"></div>
+                <button class="next-btn" id="next-btn" style="display: none;">Continue Quest</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- State Management ---
+        let studentName = "Hero";
+        let currentLevel = 1;
+        let streak = 0;
+        let currentProblem = {};
+        
+        // Timer features
+        let timerId = null;
+        let timeLeft = 20; 
+        const TIME_LIMIT = 20; // 20 seconds per question
+
+        // --- Configuration Weights per Level ---
+        const levelConfig = {
+            1: { desc: "Level 1: Core Addition (1-10)", ops: ['+'], max: 10 },
+            2: { desc: "Level 2: Sums & Differences (1-20)", ops: ['+', '-'], max: 20 },
+            3: { desc: "Level 3: Strategic Multiplication", ops: ['+', '-', '*'], max: 12 },
+            4: { desc: "Level 4: Advanced Arithmetic", ops: ['+', '-', '*'], max: 50 },
+            5: { desc: "Level 5: Grandmaster Tier", ops: ['+', '-', '*'], max: 100 }
+        };
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const studentNameInput = document.getElementById('student-name');
+        const startBtn = document.getElementById('start-btn');
+        const playerWelcome = document.getElementById('player-welcome');
+        
+        const levelVal = document.getElementById('level-val');
+        const streakVal = document.getElementById('streak-val');
+        const timerVal = document.getElementById('timer-val');
+        const levelProgressBar = document.getElementById('level-progress');
+        const levelDesc = document.getElementById('level-desc');
+        const equationText = document.getElementById('equation-text');
+        const studentAnswer = document.getElementById('student-answer');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const explanationText = document.getElementById('explanation-text');
+        const nextBtn = document.getElementById('next-btn');
+        const interactionForm = document.getElementById('interaction-form');
+
+        /* ==========================================
+           FEATURE: SCREEN NAVIGATION & START SETUP
+           ========================================== */
+        startBtn.addEventListener('click', () => {
+            const nameInput = studentNameInput.value.trim();
+            if (nameInput !== "") {
+                studentName = nameInput;
+            }
+            playerWelcome.textContent = `Keep going, ${studentName}!`;
+            
+            startScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            generateQuestion();
+        });
+
+        // Allow entering by pressing enter on start screen
+        studentNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') startBtn.click();
+        });
+
+
+        /* ==========================================
+           FEATURE: TIMER CHALLENGE SYSTEM
+           ========================================== */
+        function startTimer() {
+            clearInterval(timerId);
+            timeLeft = TIME_LIMIT;
+            timerVal.textContent = `${timeLeft}s`;
+            timerVal.style.color = "#10b981"; // Safe green initially
+
+            timerId = setInterval(() => {
+                timeLeft--;
+                timerVal.textContent = `${timeLeft}s`;
+
+                if (timeLeft <= 5) {
+                    timerVal.style.color = "#ef4444"; // Dangerous red alert
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            interactionForm.style.pointerEvents = 'none';
+            streak = 0;
+            if (currentLevel > 1) currentLevel--;
+
+            feedbackPanel.className = 'feedback wrong';
+            feedbackTitle.innerHTML = '⏰ Time Ran Out!';
+            explanationText.innerHTML = `Speed is part of math mastery! The time limit expired. The correct solution to the problem was <strong>${currentProblem.answer}</strong>. Let's practice another one!`;
+            
+            updateProgressTrackers();
+            nextBtn.style.display = 'block';
+        }
+
+
+        /* ==========================================
+           CORE GAMEPLAY ENGINE
+           ========================================== */
+        function generateQuestion() {
+            const config = levelConfig[currentLevel];
+            const op = config.ops[Math.floor(Math.random() * config.ops.length)];
+            let num1, num2;
+
+            if (op === '*') {
+                num1 = Math.floor(Math.random() * (currentLevel === 3 ? 10 : 12)) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
+            } else {
+                num1 = Math.floor(Math.random() * config.max) + 1;
+                num2 = Math.floor(Math.random() * config.max) + 1;
+            }
+
+            // Prevent negative logic outcomes for subtraction sets
+            if (op === '-' && num1 < num2) {
+                let temp = num1;
+                num1 = num2;
+                num2 = temp;
+            }
+
+            let answer;
+            switch(op) {
+                case '+': answer = num1 + num2; break;
+                case '-': answer = num1 - num2; break;
+                case '*': answer = num1 * num2; break;
+            }
+
+            currentProblem = { num1, num2, op, answer };
+            
+            // Render basic UI items
+            levelVal.textContent = `Level ${currentLevel}`;
+            levelDesc.textContent = config.desc;
+            equationText.textContent = `${num1} ${op} ${num2} = ?`;
+            
+            // Reset question interactive panel states
+            studentAnswer.value = '';
+            feedbackPanel.className = 'feedback';
+            nextBtn.style.display = 'none';
+            interactionForm.style.pointerEvents = 'auto';
+            
+            updateProgressTrackers();
+            startTimer();
+            studentAnswer.focus();
+        }
+
+        function checkAnswer() {
+            const input = studentAnswer.value.trim();
+            if(input === '') return; 
+
+            clearInterval(timerId); // Turn off countdown timer during feedback phase
+            const parsedAnswer = parseInt(input, 10);
+            interactionForm.style.pointerEvents = 'none'; 
+
+            if (parsedAnswer === currentProblem.answer) {
+                // CORRECT ANSWER PROGRESSION
+                streak++;
+                
+                // Climb level tier for every 3 correct answers
+                if (streak > 0 && streak % 3 === 0 && currentLevel < 5) {
+                    currentLevel++;
+                }
+
+                feedbackPanel.className = 'feedback correct';
+                feedbackTitle.innerHTML = '🎉 Excellent Job! That is Correct.';
+                explanationText.textContent = `Perfect calculations! ${currentProblem.num1} ${currentProblem.op} ${currentProblem.num2} is exactly equal to ${currentProblem.answer}.`;
+                
+                setTimeout(generateQuestion, 2000);
+            } else {
+                // INCORRECT PATHWAY - REDUCE DIFFICULTY & EXPLAIN RULESETS
+                streak = 0; 
+                if (currentLevel > 1) currentLevel--;
+
+                feedbackPanel.className = 'feedback wrong';
+                feedbackTitle.innerHTML = '❌ Let\'s break this down together!';
+                
+                let stepByStep = '';
+                if (currentProblem.op === '+') {
+                    stepByStep = `To solve addition, combine your two groups. If you have ${currentProblem.num1} counters and add ${currentProblem.num2} more, you end up with a total of ${currentProblem.answer}.`;
+                } else if (currentProblem.op === '-') {
+                    stepByStep = `To solve subtraction, start with your initial total of ${currentProblem.num1}. Remove or hide ${currentProblem.num2} counters, and you will find exactly ${currentProblem.answer} left over.`;
+                } else if (currentProblem.op === '*') {
+                    stepByStep = `Multiplication acts like a recurring loop. ${currentProblem.num1} × ${currentProblem.num2} means counting out ${currentProblem.num1} distinct piles, with each pile holding ${currentProblem.num2} inside. Adding all piles up matches ${currentProblem.answer}.`;
+                }
+
+                explanationText.innerHTML = `Your calculation returned ${parsedAnswer}. The correct answer is <strong>${currentProblem.answer}</strong>.<br><br>${stepByStep}`;
+                nextBtn.style.display = 'block';
+            }
+
+            updateProgressTrackers();
+        }
+
+        /* ==========================================
+           FEATURE: VISUAL PROGRESS TRACKER
+           ========================================== */
+        function updateProgressTrackers() {
+            streakVal.textContent = streak;
+            
+            // Calculate progress inside the current level tier (0%, 33%, or 66%)
+            const currentProgressStep = streak % 3;
+            const progressPercent = (currentProgressStep / 3) * 100;
+            
+            // If user is at peak level tier maxed out, display 100% full bar
+            if (currentLevel === 5 && streak >= 3) {
+                levelProgressBar.style.width = '100%';
+            } else {
+                levelProgressBar.style.width = `${progressPercent}%`;
+            }
+        }
+
+        // --- Event Listeners ---
+        submitBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', generateQuestion);
+        
+        studentAnswer.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkAnswer();
+        });
+    </script>
+</body>
+</html>
